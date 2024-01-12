@@ -11,7 +11,7 @@
   "exports": "./dist/lib.cjs",
   "type": "module",
   "bin": {
-    "ploff": "dist/cli.cjs"
+    "ploff": "./dist/cli.cjs"
   },
   "keywords": [
     "utility",
