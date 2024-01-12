@@ -20,10 +20,9 @@ jobs:
           version: 8
 
       - name: Setup Node 18
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 18
-          registry-url: 'https://registry.npmjs.org/'
+          node-version: '18.x'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -31,6 +30,15 @@ jobs:
 
       - name: Build the project
         run: pnpm run build
+
+      # Bloody NPM and the stupid setup node was failing
+      - name: Authenticate with Registry
+        run: |
+          echo "registry=https://registry.npmjs.org/" > .npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+          npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN_ELEVATED }}
 
       - name: Publish
         run: pnpm semantic-release
