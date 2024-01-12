@@ -11,9 +11,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "type": "module",
   "bin": {
-    "ploff": "./dist/cli.cjs"
+    "ploff": "./dist/cli.js"
   },
   "keywords": [
     "utility",
