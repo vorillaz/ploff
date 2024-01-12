@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/vorillaz/ploff.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "bin": {
     "ploff": "./dist/cli.cjs"
@@ -40,7 +43,7 @@
     "@semantic-release/npm": "^11.0.2",
     "tsup": "8.0.1",
     "prettier": "3.1.1",
-    "semantic-release": "^22.0.12",
+    "semantic-release": "^21.1.1",
     "typescript": "5.3.3",
     "vitest": "0.34.6"
   },
