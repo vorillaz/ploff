@@ -3,7 +3,7 @@
 
 import { Command } from 'commander';
 import enq from 'enquirer';
-import { plof, checkAction } from './lib';
+import { ploff, checkAction } from './lib';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -44,7 +44,7 @@ program
       }
     }
 
-    await plof({
+    await ploff({
       repo,
       debug,
       branch,

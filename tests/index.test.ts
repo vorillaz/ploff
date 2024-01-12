@@ -1,6 +1,6 @@
 import { expect, test, beforeAll, afterAll } from 'vitest';
 import fs from 'fs';
-import { plof } from '../src/lib';
+import { ploff } from '../src/lib';
 
 test('sanity', () => {
   expect(1).toBe(1);
@@ -17,8 +17,8 @@ afterAll(() => {
   fs.rmdirSync('./tmp', { recursive: true });
 });
 
-test('plof with origin file', async () => {
-  await plof({
+test('ploff with origin file', async () => {
+  await ploff({
     repo: 'https://github.com/bayandin/awesome-awesomeness',
     origin: 'Dangerfile',
     target: 'tmp',
@@ -27,8 +27,8 @@ test('plof with origin file', async () => {
   expect(exists).toBe(true);
 });
 
-test('plof with origin directory', async () => {
-  await plof({
+test('ploff with origin directory', async () => {
+  await ploff({
     repo: 'https://github.com/bayandin/awesome-awesomeness',
     origin: '.github',
     target: 'tmp/foo',
@@ -38,8 +38,8 @@ test('plof with origin directory', async () => {
   expect(exists).toBe(true);
 });
 
-test('plof with full content', async () => {
-  await plof({
+test('ploff with full content', async () => {
+  await ploff({
     repo: 'https://github.com/bayandin/awesome-awesomeness',
     target: './tmp/full',
   });
@@ -47,8 +47,8 @@ test('plof with full content', async () => {
   expect(exists).toBe(true);
 });
 
-test('plof with branch', async () => {
-  await plof({
+test('ploff with branch', async () => {
+  await ploff({
     repo: 'https://github.com/thurwitz/example-branches',
     branch: 'enhancement',
     origin: 'README.md',
@@ -58,8 +58,8 @@ test('plof with branch', async () => {
   expect(exists).toBe(true);
 });
 
-test('plof with multiple actions', async () => {
-  await plof({
+test('ploff with multiple actions', async () => {
+  await ploff({
     repo: 'https://github.com/git/htmldocs',
     branch: 'gh-pages',
     origin: './MyFirstObjectWalk.html',

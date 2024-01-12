@@ -1,4 +1,4 @@
-name: Publish Plof
+name: Publish Ploff
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_ELEVATED }}
-          GIT_AUTHOR_NAME: 'Plof Release Bot'
+          GIT_AUTHOR_NAME: 'Ploff Release Bot'
           GIT_AUTHOR_EMAIL: 'bot-no-contact@vorillaz.com'
-          GIT_COMMITTER_NAME: 'Plof Release Bot'
+          GIT_COMMITTER_NAME: 'Ploff Release Bot'
           GIT_COMMITTER_EMAIL: 'bot-no-contact@vorillaz.com'

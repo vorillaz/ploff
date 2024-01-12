@@ -1,17 +1,17 @@
 {
-  "name": "plof",
-  "version": "0.0.0",
+  "name": "ploff",
+  "version": "0.0.1",
   "description": "A small utility to grab files from a git repository",
   "packageManager": "pnpm@8.7.0",
-  "homepage": "https://github.com/vorillaz/plof#readme",
+  "homepage": "https://github.com/vorillaz/ploff#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vorillaz/plof.git"
+    "url": "https://github.com/vorillaz/ploff.git"
   },
   "exports": "./dist/lib.cjs",
   "type": "module",
   "bin": {
-    "plof": "dist/cli.cjs"
+    "ploff": "dist/cli.cjs"
   },
   "keywords": [
     "utility",

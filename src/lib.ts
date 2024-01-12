@@ -83,7 +83,7 @@ export const checkAction = async ({
   const targ = target ?? './';
   const br = branch ? ` on branch ${branch}` : ``;
 
-  return `plof is going to clone ${repo} and copy ${orig} to folder ${targ} ${br}, is that ok?`;
+  return `ploff is going to clone ${repo} and copy ${orig} to folder ${targ} ${br}, is that ok?`;
 };
 
 // args
@@ -92,16 +92,16 @@ export const checkAction = async ({
 // branch: string
 // origin: string
 // target: string
-export type PlofArgs = {
+export type PloffArgs = {
   debug?: boolean;
   repo?: string;
   branch?: string;
   origin?: string;
   target?: string;
 };
-export const plof = async (args: PlofArgs = {}) => {
+export const ploff = async (args: PloffArgs = {}) => {
   let output = '';
-  const spinner = ora('Plof starting').start();
+  const spinner = ora('Ploff starting').start();
   const { repo, branch, origin, target = './', debug = false } = args;
 
   spinner.text = `Checking git is installed`;
@@ -146,7 +146,7 @@ export const plof = async (args: PlofArgs = {}) => {
 
   spinner.stop();
 
-  console.log(chalk.green('Plofed successfully! 🎉'));
+  console.log(chalk.green('Ploffed successfully! 🎉'));
   console.log(chalk.italic.greenBright(`Copied ${output}`));
   return true;
 };
