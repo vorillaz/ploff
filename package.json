@@ -8,7 +8,6 @@
     "type": "git",
     "url": "https://github.com/vorillaz/ploff.git"
   },
-  "exports": "./dist/lib.cjs",
   "type": "module",
   "bin": {
     "ploff": "./dist/cli.cjs"
