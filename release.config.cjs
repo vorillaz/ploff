@@ -2,7 +2,6 @@
  * @type {import('semantic-release').GlobalConfig}
  */
 module.exports = {
-  repositoryUrl: 'https://github.com/vorillaz/plof',
   branches: [
     'main',
     {
