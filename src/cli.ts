@@ -3,8 +3,8 @@
 import { version } from '../package.json';
 import { Command } from 'commander';
 import enq from 'enquirer';
-import { ploff, checkAction } from './lib';
 import chalk from 'chalk';
+import { ploff, checkAction } from './lib';
 
 const program = new Command();
 

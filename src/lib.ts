@@ -1,15 +1,10 @@
-import sh from 'shell-exec';
+import { $ } from 'execa';
+
 import chalk from 'chalk';
 import ora from 'ora';
+import fs from 'fs';
 import path from 'path';
-import {
-  checkGit,
-  createTmpDir,
-  checkItExists,
-  isFile,
-  isDirectory,
-  copyTo,
-} from './utils';
+import os from 'os';
 
 export const checkAction = async ({
   repo,
@@ -29,6 +24,61 @@ export const checkAction = async ({
   return `ploff is going to clone ${repo} and copy ${orig} to folder ${targ} ${br}, is that ok?`;
 };
 
+export const createTmpDir = async () => {
+  const tmpdir = os.tmpdir();
+  const dir = await fs.promises.mkdtemp(tmpdir);
+  return dir;
+};
+
+export const isFile = (filePath: string) => {
+  return fs.lstatSync(filePath).isFile();
+};
+
+export const isDirectory = (filePath: string) => {
+  return fs.lstatSync(filePath).isDirectory();
+};
+
+export const checkItExists = async (repo: string) => {
+  try {
+    const { stdout } = await $`git ls-remote ${repo}`;
+    if (stdout) {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+
+  return false;
+};
+
+export const copyTo = async (origin: string, towards: string) => {
+  if (isFile(origin as string)) {
+    const filename = path.basename(origin);
+    await fs.promises.cp(origin, path.join(towards, filename), {
+      recursive: true,
+    });
+    return;
+  }
+
+  if (isDirectory(origin)) {
+    await fs.promises.cp(origin, path.join(towards), {
+      recursive: true,
+    });
+
+    return;
+  }
+  throw new Error('Not a file or directory');
+};
+
+export const checkGit = async () => {
+  const { stdout } = await $`git --version`;
+
+  if (stdout) {
+    return true;
+  }
+  return false;
+};
+
 // args
 // debug: boolean
 // repo: string
@@ -38,12 +88,17 @@ export const checkAction = async ({
 export type PloffArgs = {
   debug?: boolean;
   force?: boolean;
-  repo?: string;
+  repo: string;
   branch?: string;
   origin?: string;
   target?: string;
 };
-export const ploff = async (args: PloffArgs = {}) => {
+
+export const ploff = async (
+  args: PloffArgs = {
+    repo: '',
+  },
+) => {
   let output = '';
   const spinner = ora('Ploff starting').start();
   const { repo, branch, origin, target = './', debug } = args;
@@ -59,16 +114,16 @@ export const ploff = async (args: PloffArgs = {}) => {
   debuglog('executionDir', executionDir);
 
   spinner.text = `Checking if git is installed`;
-  const isGitInstalled = await checkGit();
+  // const isGitInstalled = await checkGit();
 
-  if (!isGitInstalled) {
-    chalk.red('git is not installed, exiting...');
-    spinner.stop();
-    return;
-  }
+  // if (!isGitInstalled) {
+  //   chalk.red('git is not installed, exiting...');
+  //   spinner.stop();
+  //   return;
+  // }
 
   spinner.text = `Checking remote repository`;
-  const exists = await checkItExists(repo);
+  const exists = await checkItExists(repo as string);
   if (!exists) {
     console.log(chalk.red('Remote repository does not exist'));
     return;
@@ -86,19 +141,21 @@ export const ploff = async (args: PloffArgs = {}) => {
 
   if (branch) {
     spinner.text = `Cloning ${branch} from repository`;
-    await sh(`git clone -b ${branch} -n --depth=1 --filter=tree:0 ${repo} .`);
+    await $`git clone -b ${branch} -n --depth=1 --filter=tree:0 ${
+      repo as string
+    } .`;
   } else {
     spinner.text = `Cloning repository`;
-    await sh(`git clone -n --depth=1 --filter=tree:0 ${repo} .`);
+    await $`git clone -n --depth=1 --filter=tree:0 ${repo} .`;
   }
 
   // Sparse checkout
   spinner.text = `Sparse checkout`;
 
-  await sh(`git sparse-checkout set --no-cone ${origin ?? './'}`);
+  await $`git sparse-checkout set --no-cone ${origin ?? './'}`;
 
   spinner.text = `Checkout`;
-  await sh(`git checkout`);
+  await $`git checkout`;
 
   const repointedTarget = path.join(executionDir, target);
   const repointedOrigin = path.join(tmpdir, origin ?? './');
