@@ -25,11 +25,6 @@ program
     const message = await checkAction({ repo, target, origin, branch });
 
     if (!force) {
-      const ss = await enq.prompt({
-        type: 'confirm',
-        name: 'confirm',
-        message,
-      });
       const { confirm } = await enq.prompt<{
         confirm: boolean;
       }>({

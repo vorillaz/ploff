@@ -113,8 +113,8 @@ export const ploff = async (args: PloffArgs = {}) => {
   spinner.text = `And you're done!`;
 
   spinner.stop();
+
   console.log(chalk.green('Ploffed successfully! 🎉'));
-  console.log(chalk.italic.greenBright(`Copied ${output}`));
 
   // Return to the original directory
   process.chdir(executionDir);
