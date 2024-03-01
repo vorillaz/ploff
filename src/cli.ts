@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-
+import { version } from '../package.json';
 import { Command } from 'commander';
 import enq from 'enquirer';
 import { ploff, checkAction } from './lib';
@@ -9,9 +9,9 @@ import chalk from 'chalk';
 const program = new Command();
 
 program
-  .version('1.0.0')
+  .version(version)
   .description(
-    'An tiny CLI tool to clone a git repo and copy a directory or file to a target directory',
+    'An tiny CLI tool to clone a git repository and copy a directory or file to a target directory',
   )
   .argument('<repo>', 'Git repo to clone')
   .option('-d, --debug', 'Output extra debugging')

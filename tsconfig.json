@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "resolveJsonModule": true,
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
