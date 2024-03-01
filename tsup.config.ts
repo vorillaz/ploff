@@ -4,9 +4,10 @@ export default defineConfig({
   entry: ['src/cli.ts', 'src/lib.ts'],
   format: ['esm'],
   sourcemap: true,
-  minify: true,
+  minify: false,
   target: 'esnext',
   outDir: 'dist',
+  splitting: false,
   clean: true,
   dts: true,
 });
