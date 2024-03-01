@@ -14,6 +14,11 @@
   "bin": {
     "ploff": "./dist/cli.js"
   },
+  "files": [
+    "dist"
+  ],
+  "exports": "./dist/cli.js",
+  "type": "module",
   "keywords": [
     "utility",
     "git",
@@ -31,18 +36,19 @@
     "chalk": "5.3.0",
     "commander": "11.1.0",
     "enquirer": "2.4.1",
-    "shell-exec": "1.1.2",
-    "ora": "7.0.1"
+    "ora": "7.0.1",
+    "shell-exec": "1.1.2"
   },
   "devDependencies": {
-    "@semantic-release/release-notes-generator": "12.1.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "9.2.5",
     "@semantic-release/npm": "^11.0.2",
-    "tsup": "8.0.1",
+    "@semantic-release/release-notes-generator": "12.1.0",
+    "@types/node": "^20.11.24",
     "prettier": "3.1.1",
     "semantic-release": "^21.1.1",
+    "tsup": "8.0.1",
     "typescript": "5.3.3",
     "vitest": "0.34.6"
   },
