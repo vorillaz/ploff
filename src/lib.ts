@@ -1,72 +1,15 @@
 import sh from 'shell-exec';
-import os from 'os';
-import fs from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
 import path from 'path';
-
-const checkGit = async () => {
-  const { stdout } = await sh('git --version');
-
-  if (stdout) {
-    return true;
-  }
-  return false;
-};
-
-const createTmpDir = async () => {
-  const tmpdir = os.tmpdir();
-  const dir = await fs.promises.mkdtemp(tmpdir);
-
-  return dir;
-};
-
-const isFile = (filePath: string) => {
-  return fs.lstatSync(filePath).isFile();
-};
-
-const isDirectory = (filePath: string) => {
-  return fs.lstatSync(filePath).isDirectory();
-};
-
-const copyTo = async (
-  origin: string | undefined,
-  towards: string,
-  tmpdir: string,
-) => {
-  const from = path.join(tmpdir, origin ?? './');
-  const dest = path.join(process.cwd(), towards ?? '.');
-
-  if (isFile(from)) {
-    const filename = path.basename(from);
-    await fs.promises.cp(from, path.join(dest, filename), {
-      recursive: true,
-    });
-    return;
-  }
-
-  if (isDirectory(from)) {
-    await fs.promises.cp(from, path.join(dest), {
-      recursive: true,
-    });
-
-    return;
-  }
-  throw new Error('Not a file or directory');
-};
-
-const checkItExists = async (repo?: string) => {
-  try {
-    const { stdout } = await sh(`git ls-remote ${repo}`);
-    if (stdout) {
-      return true;
-    }
-  } catch (error) {
-    return false;
-  }
-
-  return false;
-};
+import {
+  checkGit,
+  createTmpDir,
+  checkItExists,
+  isFile,
+  isDirectory,
+  copyTo,
+} from './utils';
 
 export const checkAction = async ({
   repo,
@@ -94,6 +37,7 @@ export const checkAction = async ({
 // target: string
 export type PloffArgs = {
   debug?: boolean;
+  force?: boolean;
   repo?: string;
   branch?: string;
   origin?: string;
@@ -102,13 +46,23 @@ export type PloffArgs = {
 export const ploff = async (args: PloffArgs = {}) => {
   let output = '';
   const spinner = ora('Ploff starting').start();
-  const { repo, branch, origin, target = './', debug = false } = args;
+  const { repo, branch, origin, target = './', debug } = args;
 
-  spinner.text = `Checking git is installed`;
+  const debuglog = (message?: any, ...optionalParams: any[]) => {
+    if (debug) {
+      console.log(message, ...optionalParams);
+    }
+  };
+
+  const executionDir = process.cwd();
+
+  debuglog('executionDir', executionDir);
+
+  spinner.text = `Checking if git is installed`;
   const isGitInstalled = await checkGit();
 
   if (!isGitInstalled) {
-    chalk.red('git is not installed');
+    chalk.red('git is not installed, exiting...');
     spinner.stop();
     return;
   }
@@ -116,7 +70,7 @@ export const ploff = async (args: PloffArgs = {}) => {
   spinner.text = `Checking remote repository`;
   const exists = await checkItExists(repo);
   if (!exists) {
-    console.log(chalk.red('Repo does not exist'));
+    console.log(chalk.red('Remote repository does not exist'));
     return;
   }
 
@@ -125,28 +79,44 @@ export const ploff = async (args: PloffArgs = {}) => {
 
   spinner.text = `Cloning repository`;
 
+  // Move to the tmp directory
+  process.chdir(tmpdir);
+
+  debuglog('Moved to tmpdir', tmpdir);
+
   if (branch) {
-    spinner.text = `Cloning ${branch} from repo`;
-    await sh(`git clone -b ${branch} ${repo} ${tmpdir}`);
+    spinner.text = `Cloning ${branch} from repository`;
+    await sh(`git clone -b ${branch} -n --depth=1 --filter=tree:0 ${repo} .`);
   } else {
-    spinner.text = `Cloning repo`;
-    await sh(`git clone ${repo} ${tmpdir}`);
+    spinner.text = `Cloning repository`;
+    await sh(`git clone -n --depth=1 --filter=tree:0 ${repo} .`);
   }
 
-  output = `${origin ?? './'} to ${target ?? '/'}`;
+  // Sparse checkout
+  spinner.text = `Sparse checkout`;
+
+  await sh(`git sparse-checkout set --no-cone ${origin ?? './'}`);
+
+  spinner.text = `Checkout`;
+  await sh(`git checkout`);
+
+  const repointedTarget = path.join(executionDir, target);
+  const repointedOrigin = path.join(tmpdir, origin ?? './');
+
+  output = `${origin} to ${repointedTarget ?? '/'}`;
   spinner.text = `Copying ${output}`;
 
-  await copyTo(origin, target, tmpdir);
+  debuglog('executionDir before copying', executionDir);
+  debuglog('repointedTarget', repointedTarget);
+  debuglog('repointedOrigin', repointedOrigin);
+  await copyTo(repointedOrigin, repointedTarget);
   spinner.text = `And you're done!`;
 
-  // cleanup
-
-  spinner.text = `Cleaning up`;
-  await fs.promises.rm(tmpdir, { recursive: true });
-
   spinner.stop();
-
   console.log(chalk.green('Ploffed successfully! 🎉'));
   console.log(chalk.italic.greenBright(`Copied ${output}`));
+
+  // Return to the original directory
+  process.chdir(executionDir);
   return true;
 };

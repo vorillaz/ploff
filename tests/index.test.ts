@@ -1,20 +1,27 @@
 import { expect, test, beforeAll, afterAll } from 'vitest';
 import fs from 'fs';
+import path from 'path';
 import { ploff } from '../src/lib';
 
-test('sanity', () => {
-  expect(1).toBe(1);
-});
-
 beforeAll(() => {
-  if (fs.existsSync('./tmp')) {
-    fs.rmdirSync('./tmp', { recursive: true });
+  const p = path.join(process.cwd(), 'tmp');
+  try {
+    if (fs.existsSync(p)) {
+      fs.rmdirSync(p, { recursive: true });
+    }
+    fs.mkdirSync(p);
+  } catch (error) {
+    console.log(error);
   }
-  fs.mkdirSync('./tmp');
 });
 
 afterAll(() => {
-  fs.rmdirSync('./tmp', { recursive: true });
+  const p = path.join(process.cwd(), 'tmp');
+  try {
+    fs.rmdirSync(p, { recursive: true });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 test('ploff with origin file', async () => {
@@ -23,7 +30,7 @@ test('ploff with origin file', async () => {
     origin: 'Dangerfile',
     target: 'tmp',
   });
-  const exists = fs.existsSync('tmp/Dangerfile');
+  const exists = fs.existsSync(path.join(process.cwd(), 'tmp', 'Dangerfile'));
   expect(exists).toBe(true);
 });
 
@@ -58,11 +65,22 @@ test('ploff with branch', async () => {
   expect(exists).toBe(true);
 });
 
+test('ploff with huge repository', async () => {
+  await ploff({
+    repo: 'https://github.com/raycast/extensions',
+    branch: 'main',
+    origin: 'extensions/abstract-api',
+    target: './tmp/raycast-extensions',
+  });
+  const exists = fs.existsSync('./tmp/raycast-extensions/tsconfig.json');
+  expect(exists).toBe(true);
+});
+
 test('ploff with multiple actions', async () => {
   await ploff({
     repo: 'https://github.com/git/htmldocs',
     branch: 'gh-pages',
-    origin: './MyFirstObjectWalk.html',
+    origin: 'MyFirstObjectWalk.html',
     target: './tmp/another',
   });
   // check if tmp/.github exists
