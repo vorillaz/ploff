@@ -6,6 +6,14 @@ import path from 'path';
 import os from 'os';
 import { finalUrl } from './http';
 
+const isTargetAll = (t: string) => {
+  const trimmed = t.replace(/\/$/, '');
+  if (trimmed === './' || trimmed === '/' || trimmed === '.') {
+    return true;
+  }
+  return false;
+};
+
 export const checkAction = async ({
   repo,
   target,
@@ -19,9 +27,14 @@ export const checkAction = async ({
 }) => {
   const orig = origin ?? './';
   const targ = target ?? './';
-  const br = branch ? ` on branch ${branch}` : ``;
+  const br = branch ? ` from branch ${branch}` : ``;
 
-  return `ploff is going to clone ${repo} and copy ${orig} to folder ${targ} ${br}, is that ok?`;
+  const originName = isTargetAll(orig) ? 'all files' : orig;
+  const targetName = isTargetAll(targ)
+    ? 'to current folder'
+    : `to folder ${targ}`;
+
+  return `ploff is going to clone ${repo} and copy ${originName} targetName ${br} is that ok?`;
 };
 
 export const createTmpDir = async () => {
@@ -64,7 +77,6 @@ export const copyTo = async (origin: string, towards: string) => {
     await fs.promises.cp(origin, path.join(towards), {
       recursive: true,
     });
-
     return;
   }
   throw new Error('Not a file or directory');
@@ -116,8 +128,8 @@ export const ploff = async (
   debuglog('executionDir', executionDir);
 
   spinner.text = `Checking if git is installed`;
-  // const isGitInstalled = await checkGit();
 
+  // const isGitInstalled = await checkGit();
   // if (!isGitInstalled) {
   //   chalk.red('git is not installed, exiting...');
   //   spinner.stop();
@@ -148,14 +160,21 @@ export const ploff = async (
     } .`;
   } else {
     spinner.text = `Cloning repository`;
+    debuglog('Cloning repository', repo);
+    debuglog(`git clone -n --depth=1 --filter=tree:0 ${repo} .`);
     await $`git clone -n --depth=1 --filter=tree:0 ${repo} .`;
   }
 
-  // Sparse checkout
-  spinner.text = `Sparse checkout`;
+  if (isTargetAll(origin ?? './')) {
+    debuglog('Cheking out all files');
+    spinner.text = `Checkout all files, this may take a while`;
+  } else {
+    debuglog('Sparse checkout');
+    // Sparse checkout
+    spinner.text = `Sparse checkout`;
 
-  await $`git sparse-checkout set --no-cone ${origin ?? './'}`;
-
+    await $`git sparse-checkout set --no-cone ${origin ?? './'}`;
+  }
   spinner.text = `Checkout`;
   await $`git checkout`;
 

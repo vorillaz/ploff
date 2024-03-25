@@ -49,9 +49,19 @@ test('ploff with full content', async () => {
   await ploff({
     repo: 'https://github.com/bayandin/awesome-awesomeness',
     target: './tmp/full',
+    debug: true,
   });
   const exists = fs.existsSync('./tmp/full');
   expect(exists).toBe(true);
+
+  const code = fs.existsSync('./tmp/full/code-of-conduct.md');
+  expect(code).toBe(true);
+
+  const danger = fs.existsSync('./tmp/full/Dangerfile');
+  expect(danger).toBe(true);
+
+  const github = fs.existsSync('./tmp/full/.github');
+  expect(github).toBe(true);
 });
 
 test('ploff with branch', async () => {
