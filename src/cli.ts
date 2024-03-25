@@ -39,13 +39,18 @@ program
       }
     }
 
-    await ploff({
-      repo,
-      debug,
-      branch,
-      origin,
-      target,
-    });
+    try {
+      await ploff({
+        repo,
+        debug,
+        branch,
+        origin,
+        target,
+      });
+    } catch (error) {
+      console.log(`Error cloning repo: ${repo}`);
+      console.log(chalk.red(error));
+    }
   });
 
 program.parse();

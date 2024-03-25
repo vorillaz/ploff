@@ -87,3 +87,15 @@ test('ploff with multiple actions', async () => {
   const exists = fs.existsSync('./tmp/another/MyFirstObjectWalk.html');
   expect(exists).toBe(true);
 });
+
+test('ploff with redirected URL', async () => {
+  await ploff({
+    repo: 'https://git.new/ploff',
+    branch: 'main',
+    origin: 'logo.svg',
+    target: './tmp/ploffed',
+  });
+  // check if tmp/.github exists
+  const exists = fs.existsSync('./tmp/ploffed/logo.svg');
+  expect(exists).toBe(true);
+});

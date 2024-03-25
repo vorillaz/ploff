@@ -1,10 +1,10 @@
 import { $ } from 'execa';
-
 import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { finalUrl } from './http';
 
 export const checkAction = async ({
   repo,
@@ -101,7 +101,9 @@ export const ploff = async (
 ) => {
   let output = '';
   const spinner = ora('Ploff starting').start();
-  const { repo, branch, origin, target = './', debug } = args;
+  const { repo: repoOriginalUrl, branch, origin, target = './', debug } = args;
+
+  const repo = (await finalUrl(repoOriginalUrl)) as string;
 
   const debuglog = (message?: any, ...optionalParams: any[]) => {
     if (debug) {
@@ -123,7 +125,7 @@ export const ploff = async (
   // }
 
   spinner.text = `Checking remote repository`;
-  const exists = await checkItExists(repo as string);
+  const exists = await checkItExists(repo);
   if (!exists) {
     console.log(chalk.red('Remote repository does not exist'));
     return;
