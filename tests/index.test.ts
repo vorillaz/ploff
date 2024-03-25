@@ -97,7 +97,7 @@ test('ploff with multiple actions', async () => {
   expect(exists).toBe(true);
 });
 
-test.only('ploff with redirected URL', async () => {
+test('ploff with redirected URL', async () => {
   await ploff({
     repo: 'https://git.new/ploff',
     branch: 'main',

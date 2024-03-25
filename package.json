@@ -38,7 +38,6 @@
     "enquirer": "2.4.1",
     "execa": "8.0.1",
     "ora": "7.0.1",
-    "tiny-lru": "^11.2.5",
     "undici": "6.10.1"
   },
   "devDependencies": {
