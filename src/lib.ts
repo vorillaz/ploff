@@ -34,7 +34,8 @@ export const checkAction = async ({
     ? 'to current folder'
     : `to folder ${targ}`;
 
-  return `ploff is going to clone ${repo} and copy ${originName} ${targetName} ${br} is that ok?`;
+  const redirected = await finalUrl(repo);
+  return `ploff is going to clone ${redirected} and copy ${originName} ${targetName} ${br} is that ok?`;
 };
 
 export const createTmpDir = async () => {

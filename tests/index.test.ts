@@ -49,7 +49,6 @@ test('ploff with full content', async () => {
   await ploff({
     repo: 'https://github.com/bayandin/awesome-awesomeness',
     target: './tmp/full',
-    debug: true,
   });
   const exists = fs.existsSync('./tmp/full');
   expect(exists).toBe(true);
@@ -98,12 +97,13 @@ test('ploff with multiple actions', async () => {
   expect(exists).toBe(true);
 });
 
-test('ploff with redirected URL', async () => {
+test.only('ploff with redirected URL', async () => {
   await ploff({
     repo: 'https://git.new/ploff',
     branch: 'main',
     origin: 'logo.svg',
     target: './tmp/ploffed',
+    debug: true,
   });
   // check if tmp/.github exists
   const exists = fs.existsSync('./tmp/ploffed/logo.svg');

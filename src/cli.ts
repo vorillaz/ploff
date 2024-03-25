@@ -20,26 +20,31 @@ program
   .option('-o, --origin <origin>', 'Origin directory or file')
   .option('-t, --target <target>', 'Target directory')
   .action(async (repo, options) => {
-    const { debug, branch, origin, target, force } = options;
+    try {
+      const { debug, branch, origin, target, force } = options;
 
-    const message = await checkAction({ repo, target, origin, branch });
-
-    if (!force) {
-      const { confirm } = await enq.prompt<{
-        confirm: boolean;
-      }>({
-        type: 'confirm',
-        name: 'confirm',
-        message,
+      const message = await checkAction({
+        repo,
+        target,
+        origin,
+        branch,
       });
 
-      if (!confirm) {
-        console.log(chalk.red('Sad to see you go!'));
-        return;
-      }
-    }
+      if (!force) {
+        const { confirm } = await enq.prompt<{
+          confirm: boolean;
+        }>({
+          type: 'confirm',
+          name: 'confirm',
+          message,
+        });
 
-    try {
+        if (!confirm) {
+          console.log(chalk.red('Sad to see you go!'));
+          return;
+        }
+      }
+
       await ploff({
         repo,
         debug,
